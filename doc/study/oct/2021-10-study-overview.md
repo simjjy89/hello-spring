@@ -1,7 +1,7 @@
 #2021-10 study overview
 - - -
 
-##List
+## List
 1. Spring Boot
 2. Java 8+
 
