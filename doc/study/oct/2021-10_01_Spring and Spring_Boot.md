@@ -1,5 +1,7 @@
 # Spring & Spring Boot
 
+<br>
+
 ## Spring 이란?
 ### Spring 핵심 철학
 - 스프링은 JAVA 기반의 FrameWork
@@ -10,8 +12,9 @@
 - 복잡한 코드의 감소
 - 아키텍처의 유연성
 
-
-- - -
+<br>
+<br>
+ 
 ## Spring 구조
 ### Spring 주요 모듈 
 - 레이어 별로 크게 `Core Container`,`AOP`,`Web`,`Data Acess`, `Test` 로 나눌 수 있다.
@@ -44,6 +47,8 @@
 #### Data Access
 #### Test
 
+<br>
+<br>
 
 ## Spring 핵심 3요소
 ### IoC(Inversion of Control)
@@ -65,9 +70,16 @@ private OwnerRepository ownerRepository = new OwnerRepository();
 ### AOP
 ### PSA
 
+<br>
+<br>
+
 ## DI를 이용한 객체 생성
 - DI란?
 - 의존성 주입 방법
+
+<br>
+<br>
+
 ## Bean 라이프 사이클과 범위
  
  
