@@ -8,17 +8,25 @@
 ## Details
 ### Spring & Spring Boot 
 - Spring 이란?
+    - Spring 핵심 철학
+    - Spring 사용 이유
 - Spring 주요 모듈
+    - Core Container
+    - AOP
+    - WEB
+    - Data Access
+    - Test
 - Spring 구조
+- Spring 핵심 3요소
+  - IoC
+  - AOP
+  - PSA
 - DI를 이용한 객체 생성
     - DI란?
     - 의존성 주입 방법
 - Bean 라이프 사이클과 범위
 - Spring MVC
-- Spring 핵심 3요소
-    - IoC 
-    - AOP
-    - PSA 
+
 - 단위 테스트
     - junit
 - Sping Boot 란?

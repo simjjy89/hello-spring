@@ -35,6 +35,7 @@
    
 #### AOP
 1. AOP
+   - AOP를 구현하기 위한 메소드 인터셉터 및 포인트 컷을 정의
 2. Aspect
 3. Instrument
 4. Test
@@ -44,9 +45,29 @@
 #### Test
 
 
-### DI를 이용한 객체 생성
+## Spring 핵심 3요소
+### IoC(Inversion of Control)
+#### IoC란?
+- IoC란 기존 사용자가 모든 작업을 제어하던 것을 컨테이너에게 위임하여 객체의 생성부터 생명주기 등 모든 객체에 대한 제어권이 넘어간 것을 IoC, 제어의 역전이라고 함. 
+이런한 제어권을 위임받은 컨테이너가 `IoC 컨테이너`
+
+
+- 일반적인 의존성에 대한 제어권 : 개발자가 직접 의존성을 만듬
+- 의존성이란 어떤 객체가 다른 객체를 사용하여 두 객체간의 연결을 의미함. 직접 new를 써서 객체를 생성하는 경우를 직접 의존성을 만든다고 함.
+```java
+public class OwnerController {
+private OwnerRepository ownerRepository = new OwnerRepository();
+}
+```
+---
+- 제어권 역전 : 직접 의존성을 만들지 않고 외부에서 의존성을 가져옴. 
+- 즉, 밖에서 나에게 의존성을 주입해 주는 것을 DI(Dependency Injection)이라고 함.
+### AOP
+### PSA
+
+## DI를 이용한 객체 생성
 - DI란?
 - 의존성 주입 방법
-### Bean 라이프 사이클과 범위
+## Bean 라이프 사이클과 범위
  
  
