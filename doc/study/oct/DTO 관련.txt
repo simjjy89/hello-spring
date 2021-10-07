@@ -1,0 +1,26 @@
+service
+ -createMember(MemberCreationRequest)
+ -updateMember(Long id, MemberCreationRequest)
+
+
+* Entity
+ - 실제 DB 테이블과 1:1로 매핑되는 클래스
+ - 테이블 내에 존재하는 컬럼만을 필드로 가져야함
+ - 상속을 받거나 구현체여서는 안됨.
+ - Controller의 Request / Response 클래스로 사용해서는 안됨
+ 
+* DTO, ENTITY 따로 써야되는 이유
+ - 요청과 응답을 할 때, Entity를 사용하게 되면 불필요한 데이터도 포함되게 됨.
+ - dto에는 데이터베이스에 들어있는 값만 변수로 지정되어있지 않음
+ - DB layer와 view layer에 각각 엔티티, dto를 사용해야함
+ - DB <-> Service 는 엔티티, Service -> Controller 는 DTO
+ - entity 를 컨트롤러에서 응답으로 return 받게되면 엔티티가 참조하고있는 객체는 지연로딩, 로딩된 객체는 또다시 본인이 참조하고있는 객체를 호출
+ - 서로를 계속 호출하게되어 무한루프에 빠지게 됨.
+ - https://tecoble.techcourse.co.kr/post/2020-08-31-dto-vs-entity/
+ - 
+
+
+* DTO -> Entity 변환 방법
+ - 일일이 수동으로 할 수 있음. //하지만 굳이..
+ - ModelMapper, MapStruct 를 사용
+
