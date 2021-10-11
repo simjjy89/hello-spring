@@ -13,12 +13,11 @@
 - 아키텍처의 유연성
 
 <br>
-<br>
  
 ## Spring 구조
 ### Spring 주요 모듈 
 - 레이어 별로 크게 `Core Container`,`AOP`,`Web`,`Data Acess`, `Test` 로 나눌 수 있다.
-![img.png](img/img.png)
+![img.png](img/springRuntime.png)
 
 #### Core Container
 스프링 Core Container 에는 4가지 모듈이 있다.
@@ -61,13 +60,49 @@
 - 의존성이란 어떤 객체가 다른 객체를 사용하여 두 객체간의 연결을 의미함. 직접 new를 써서 객체를 생성하는 경우를 직접 의존성을 만든다고 함.
 ```java
 public class OwnerController {
-private OwnerRepository ownerRepository = new OwnerRepository();
+private OwnerRepository ownerRepository = new OwnerRepository();  //변수 선언과 객체 생성을 본인이 함
 }
 ```
 ---
 - 제어권 역전 : 직접 의존성을 만들지 않고 외부에서 의존성을 가져옴. 
 - 즉, 밖에서 나에게 의존성을 주입해 주는 것을 DI(Dependency Injection)이라고 함.
+```java
+class OwnerController {
+
+    private OwnerRepository repo;  //변수 선언만 함
+
+    public OwnerController(OwnerRepository repo) {  //외부에서 객체를 주입받음
+    this.repo = repo;
+}
+
+```
 ### AOP
+#### AOP(Aspect-Oriented Programming) 란?
+- 관점 지향 프로그래밍의 줄임말로, OOP로 독립적으로 분리하기 어려운 부가기능을 모듈화 하는 방식. 
+분리한 부가기능을 `Aspect` 라는 모듈 형태로 만들어서 설계하고 개발하는 방법임.
+- 핵심 기능에서 부가기능을 분리함으로써 핵심기능을 설계하고 구현할 때 객체지향적인 가치를 지킬 수 있도록 도와주는 개념.
+
+#### Aspect 란?
+- 부가기능을 정의한 코드인 `Advice`와 Advice를 어디에 적용할지를 결정하는 `PointCut`을 합친 개념
+ 
+#### AOP 용어 정리
+- 타겟(Target)
+  - 핵심 기능을 담고 있는 모듈로 타겟은 부가기능을 부여할 대상(객체)이 된다.
+- 어드바이스(Advice)
+      - 어드바이스는 타겟에 제공할 부가기능을 담고 있는 모듈이다.
+- 조인포인트(Join Point)
+      - 어드바이스가 적용될 수 있는 위치를 말한다. 타겟 객체가 구현한 인터페이스의 모든 메서드는 조인 포인트가 된다.
+- 포인트 컷(Pointcut)
+      - 어드바이스를 적용할 타겟의 메서드를 선별하는 정규표현식이다. 포인트컷 표현식은 execution으로 시작하고 메서드의 Signature를 비교하는 방법을 주로 이용한다.
+- 애스펙트(Aspect)
+      - AOP의 기본 모듈. 부가기능을 정의한 코드인 `Advice`와 Advice를 어디에 적용할지를 결정하는 `PointCut`을 합친 개념.
+      - 싱글톤 형태의 객체로 존재한다.
+- 어드바이저(Advisor)
+        - `Aspect`와 같은 기능. 
+
+#### 구현 방법
+
+
 ### PSA
 
 <br>
@@ -81,5 +116,18 @@ private OwnerRepository ownerRepository = new OwnerRepository();
 <br>
 
 ## Bean 라이프 사이클과 범위
- 
+
+
+## Spring Boot
+### Spring Boot란?
+![img.png](img/springBoot.png)
+- 
+
+### Spring 과 Spring Boot의 차이점
+![img.png](img/different.png) 
+
+ - Embed Tomcat을 사용하여 따로 Tomcat을 설치하거나 매번 버전을 관리해 주어야 하는 수고스러움을 덜어줌
+ - DI 설정을 XML에서 할 필요가 없음
+
+
  
