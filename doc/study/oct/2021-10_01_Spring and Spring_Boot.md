@@ -132,7 +132,7 @@ class OwnerController {
 
 #### 구현 방법
 
-######TimeTraceAop.java (@Around 적용)
+###### TimeTraceAop.java (@Around 적용)
 ```java
 @Aspect //해당 클래스가 Aspect를 나타내는 클래스라는 것을 명시
 @Component //@Component 을 사용하던가 SpringConfig에 @Bean으로 등록하던가 하면됨
@@ -154,7 +154,7 @@ public class TimeTraceAop {
     }
 }
 ```
-> ######로그
+> ###### 로그
 > ![img.png](img.png)
  
 - @Around : 타겟 메서드를 감싸서 특정 Advice를 실행 한다는 의미. 
