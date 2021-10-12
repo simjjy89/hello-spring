@@ -76,58 +76,90 @@ class OwnerController {
 }
 
 ```
+
+<br>
+
 ### AOP
 #### AOP(Aspect-Oriented Programming) 란?
+![img.png](img/AOP.png)
 - 관점 지향 프로그래밍의 줄임말로, OOP로 독립적으로 분리하기 어려운 부가기능을 모듈화 하는 방식. 
-분리한 부가기능을 `Aspect` 라는 모듈 형태로 만들어서 설계하고 개발하는 방법임.
-- 핵심 기능에서 부가기능을 분리함으로써 핵심기능을 설계하고 구현할 때 객체지향적인 가치를 지킬 수 있도록 도와주는 개념.
+분리한 부가기능을 `Aspect` 라는 모듈 형태로 만들어서 설계하고 개발하는 방법임. 
+- 중복을 줄여서 적은 코드 수정으로 전체 변경을 할 수 있게 하자는 목적에서 출발
 
-#### Aspect 란?
-- 부가기능을 정의한 코드인 `Advice`와 Advice를 어디에 적용할지를 결정하는 `PointCut`을 합친 개념
- 
+<br>
+
+#### AOP  및 장점
+- 중복되는 코드를 제거
+- 효율적인 유지보수
+- 변화 수용이 용이
+- 재활용성 극대화
+
+<br>
+
 #### AOP 용어 정리
 - 타겟(Target)
   - 핵심 기능을 담고 있는 모듈로 타겟은 부가기능을 부여할 대상(객체)이 된다.
 - 어드바이스(Advice)
-      - 어드바이스는 타겟에 제공할 부가기능을 담고 있는 모듈이다.
+  - 어드바이스는 타겟에 제공할 부가기능을 담고 있는 모듈이다.
 - 조인포인트(Join Point)
-      - 어드바이스가 적용될 수 있는 위치를 말한다. 타겟 객체가 구현한 인터페이스의 모든 메서드는 조인 포인트가 된다.
+  - 어드바이스가 적용될 수 있는 위치를 말한다. 타겟 객체가 구현한 인터페이스의 모든 메서드는 조인 포인트가 된다.
 - 포인트 컷(Pointcut)
-      - 어드바이스를 적용할 타겟의 메서드를 선별하는 정규표현식이다. 포인트컷 표현식은 execution으로 시작하고 메서드의 Signature를 비교하는 방법을 주로 이용한다.
+  - 어드바이스를 적용할 타겟의 메서드를 선별하는 정규표현식이다. `JoinPoint`가 `Pointcut`에 일치할 때마다 해당 `PointCut`에 관련된 `Advice`가 실행됨.
 - 애스펙트(Aspect)
-      - AOP의 기본 모듈. 부가기능을 정의한 코드인 `Advice`와 Advice를 어디에 적용할지를 결정하는 `PointCut`을 합친 개념.
-      - 싱글톤 형태의 객체로 존재한다.
-- 어드바이저(Advisor)
-        - `Aspect`와 같은 기능. 
+  - 부가기능을 정의한 코드인 `Advice`와 Advice를 어디에 적용할지를 결정하는 `PointCut`을 합친 개념.
+  - 여러객체에 공통적으로 적용되는 관심사항.
+  - 싱글톤 형태의 객체로 존재한다. 
+- 위빙(Weaving)
+  - `Aspect`를 `Target` 객체에 연결시켜 관점지향 객체로 만드는 과정을 의미함. `Advice`를 비즈니스 로지기 코드에 삽입하는 것을 의미.
+  
+<br>
+
+#### Spring AOP 동작 원리
+- Spring의 AOP는 기본적으로 프록시(Proxy) 방식으로 동작하도록 되어있음.
+- 스프링은 Aspect의 적용 대상(target)이 되는 객체에 대한 Proxy를 만들어 제공.
+- 대상객체(Target)이 되는 객체를 사용하느 코드는 대상객체(Target)를 Proxy를 통해서 간접적으로 접근.
+- Proxy는 공통기능(Advice)를 실행한 뒤 대상객체(Target)의 실제 메서드를 호출하거나 대상객체(Target)의 실제 메소드가 호출된 뒤 공통기능(Advice)을 실행
+
+
+> ![img.png](img/proxy.png)
+> Proxy Pattern?
+> - 프록시 패턴이란 의미 그대로 실제 기능을 수행하는 주체(RealSubject)를 바로 호출하는 대신 대리자(Proxy)를 거쳐서 호출하는 것.
+> - 클라이언트 -> 실제 기능을 담당하는 객체가 아닌, 클라이언트 -> 프록시 객체 -> 실제 기능을 담당하는 객체의 흐름으로 진행이 됨.
+> - 실제 기능을 수행하기전에 전처리를 작업을 할 수 있음.
+> - 실제 객체를 수정하지 않고 추가적인 기능을 삽입 할 수 있음.
+
+<br>
 
 #### 구현 방법
 
+######TimeTraceAop.java (@Around 적용)
+```java
+@Aspect //해당 클래스가 Aspect를 나타내는 클래스라는 것을 명시
+@Component //@Component 을 사용하던가 SpringConfig에 @Bean으로 등록하던가 하면됨
+public class TimeTraceAop {
 
-### PSA
+    @Around("execution(* hello.hellospring..*(..))") // 부가기능을 적용할 Target의 패턴
+    public Object excecute(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+        System.out.println("START : "+joinPoint.toString());
+        try{
+            return joinPoint.proceed();
+        } finally {
+            long finish = System.currentTimeMillis();
+            long timeMs = finish - start;
+            System.out.println("END : "+joinPoint.toString()+" " + timeMs + "ms");
 
-<br>
-<br>
+        }
 
-## DI를 이용한 객체 생성
-- DI란?
-- 의존성 주입 방법
-
-<br>
-<br>
-
-## Bean 라이프 사이클과 범위
-
-
-## Spring Boot
-### Spring Boot란?
-![img.png](img/springBoot.png)
-- 
-
-### Spring 과 Spring Boot의 차이점
-![img.png](img/different.png) 
-
- - Embed Tomcat을 사용하여 따로 Tomcat을 설치하거나 매번 버전을 관리해 주어야 하는 수고스러움을 덜어줌
- - DI 설정을 XML에서 할 필요가 없음
-
-
+    }
+}
+```
+> ######로그
+> ![img.png](img.png)
+ 
+- @Around : 타겟 메서드를 감싸서 특정 Advice를 실행 한다는 의미. 
+- @Before : 타겟 메서드가 실행되기 전에 Advice를 실행.
+- @After : 타겟 메서드가 실행된 후에 Advice를 실행.
+- @AfterReturning : 타겟 메서드가 정상적으로 끝났을 경우 Advice를 실행
+- @AfterThrowing : 타겟 메서드에서 throwing이 발생했을때 Advice 실행
  
