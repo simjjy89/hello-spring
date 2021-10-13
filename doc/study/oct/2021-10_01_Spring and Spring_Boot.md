@@ -199,10 +199,10 @@ public class TimeTraceAop {
 
 > - AOP 적용 전
 > 
-> ![img.png](img/AOP적용전.png)
+> ![img.png](img/AOP적용전.PNG)
 >- AOP 적용 후
 > 
-> ![img.png](img/AOP적용.png)
+> ![img.png](img/AOP적용.PNG)
  
 - @Around : 타겟 메서드를 감싸서 특정 Advice를 실행 한다는 의미. 
 - @Before : 타겟 메서드가 실행되기 전에 Advice를 실행.
