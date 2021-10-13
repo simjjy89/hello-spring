@@ -56,26 +56,49 @@
 이런한 제어권을 위임받은 컨테이너가 `IoC 컨테이너`
 
 
+>Bean이란?
+>- Spring IoC 컨테이너에 의해 관리되는 객체들을 `Bean`이라고 함. Bean은 Spring Ioc 컨테이너에 의해 인스턴스로 만들어지고, 조립되고, 관리를 받음.
+
+
+
+<BR>
+
 - 일반적인 의존성에 대한 제어권 : 개발자가 직접 의존성을 만듬
-- 의존성이란 어떤 객체가 다른 객체를 사용하여 두 객체간의 연결을 의미함. 직접 new를 써서 객체를 생성하는 경우를 직접 의존성을 만든다고 함.
-```java
-public class OwnerController {
-private OwnerRepository ownerRepository = new OwnerRepository();  //변수 선언과 객체 생성을 본인이 함
-}
-```
----
-- 제어권 역전 : 직접 의존성을 만들지 않고 외부에서 의존성을 가져옴. 
-- 즉, 밖에서 나에게 의존성을 주입해 주는 것을 DI(Dependency Injection)이라고 함.
-```java
-class OwnerController {
+>```java
+>public class OwnerController {
+>
+>private OwnerRepository ownerRepository = new OwnerRepository();  //변수 선언과 객체 생성을 본인이 함
+>
+>}
+>```
+>- 클래스 안에서 객체 생성을 함.
+>- 클래스가 본인의 로직뿐만 아니라 생성한 객체에 대한 구현도 책임져야 함.
+>- 클래스가 생성간 객체에 대해 의존성을 가짐
+>- 의존성을 가지고 있는 객체의 클래스가 변경되는 경우 수정하는 작업이 생길 수 있음.
+>- SRP(단일 책임 원칙)에 위배됨.
+ 
 
-    private OwnerRepository repo;  //변수 선언만 함
+<br>
 
-    public OwnerController(OwnerRepository repo) {  //외부에서 객체를 주입받음
-    this.repo = repo;
-}
+- 제어권 역전 : 직접 의존성을 만들지 않고 외부에서 의존성을 가져옴.
+>```java
+>class OwnerController {
+>
+>    private OwnerRepository repo;  //변수 선언만 함
+>
+>    public OwnerController(OwnerRepository repo) {  //외부에서 객체를 주입받음
+>    this.repo = repo;
+>}
+>```
+> - 클래스에서 객체를 생성하지 않고 외부에서 주입받음
+> - 주입받은 객체의 클래스가 변경되어도 수정작업이 필요 없음.
+> - SRP(단일 책임 원칙)에 위배되지 않음.
 
-```
+<br><br>
+
+#### DI(Dependency Injection)
+
+
 
 <br>
 
@@ -102,7 +125,7 @@ class OwnerController {
 - 어드바이스(Advice)
   - 어드바이스는 타겟에 제공할 부가기능을 담고 있는 모듈이다.
 - 조인포인트(Join Point)
-  - 어드바이스가 적용될 수 있는 위치를 말한다. 타겟 객체가 구현한 인터페이스의 모든 메서드는 조인 포인트가 된다.
+  - 어드바이스가 어디에 적용될것인가? 메서드, 필드, 객체, 생성자 등. (Spring AOP 에서는 메서드에만 적용)
 - 포인트 컷(Pointcut)
   - 어드바이스를 적용할 타겟의 메서드를 선별하는 정규표현식이다. `JoinPoint`가 `Pointcut`에 일치할 때마다 해당 `PointCut`에 관련된 `Advice`가 실행됨.
 - 애스펙트(Aspect)
@@ -110,7 +133,7 @@ class OwnerController {
   - 여러객체에 공통적으로 적용되는 관심사항.
   - 싱글톤 형태의 객체로 존재한다. 
 - 위빙(Weaving)
-  - `Aspect`를 `Target` 객체에 연결시켜 관점지향 객체로 만드는 과정을 의미함. `Advice`를 비즈니스 로지기 코드에 삽입하는 것을 의미.
+  - `Aspect`를 `Target` 객체에 연결시켜 관점지향 객체로 만드는 과정을 의미함. `Advice`를 비즈니스 로직 코드에 삽입하는 것을 의미.
   
 <br>
 
@@ -133,6 +156,9 @@ class OwnerController {
 #### 구현 방법
 
 ###### TimeTraceAop.java (@Around 적용)
+- 시작시간과 종료 시간을 표시하는 Aspect 구현
+    - @Aspect로 해당 클래스가  Aspect를 나타내는 클래스라는 것을 명시하고 @Component를 사용하여 Bean으로 등록
+    - 
 ```java
 @Aspect //해당 클래스가 Aspect를 나타내는 클래스라는 것을 명시
 @Component //@Component 을 사용하던가 SpringConfig에 @Bean으로 등록하던가 하면됨
@@ -154,8 +180,29 @@ public class TimeTraceAop {
     }
 }
 ```
-> ###### 로그
-> ![img.png](img.png)
+
+###### MemberController.java
+```java
+
+    @ApiOperation(value= "전체 유저 정보 출력", notes = "전체 유저정보를 가져옴", response = Member.class)
+    @RequestMapping(value = "/user/getAll", method = RequestMethod.GET)
+    public Page<Member> getAll (@PageableDefault Pageable pageable){
+
+        System.out.println("GET CLASS : "+memberService.getClass());
+        Page<Member> result = memberService.findAll(pageable);
+        return result;
+    }
+
+```
+
+###### 로그
+
+> - AOP 적용 전
+> 
+> ![img.png](img/AOP적용전.png)
+>- AOP 적용 후
+> 
+> ![img.png](img/AOP적용.png)
  
 - @Around : 타겟 메서드를 감싸서 특정 Advice를 실행 한다는 의미. 
 - @Before : 타겟 메서드가 실행되기 전에 Advice를 실행.
