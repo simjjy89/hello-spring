@@ -49,6 +49,110 @@
 <br>
 <br>
 
+## Bean 라이프 사이클과 범위
+### Bean이란?
+- Spring IoC 컨테이너에 의해 관리되는 객체들을 `Bean`이라고 함. Bean은 Spring Ioc 컨테이너에 의해 인스턴스로 만들어지고, 조립되고, 관리를 받음.
+
+<br>
+
+### Bean 등록 방법
+![img_1.png](img_1.png)
+- 컨테이너는 빈 설정 메타정보를 파일이나 애노테이션같은 리소스로부터 전용 리더를 통 해 읽혀서 BeanDefinition 타입의 오브젝트로 변환.
+- BeanDefinition 정보를 IoC 컨테이너가 활용하게 됨.
+
+<br>
+
+#### 1. xml 설정파일을 이용한 방법
+appplication.xml 파일에 `<bean>`태그를 이용해 빈을 등록하는 방법이다. 
+```xml
+<bean id="aaa" class="xxx.yyy.zzz.AAA">
+   <property name="prop"></property>
+</bean>
+```
+- Bean의 성격을 구분하기 어려움
+- Bean의 양이 늘어나면 관리하기 어려움
+- 여러 개발자가 같은 설정파일을 수정하면 충돌 위험이 일어날 수 있음
+
+<br>
+
+#### 2. Annotation을 이용한 자동인식
+빈으로 사용될 클래스에 특별한 애노테이션을 부여하여 자동으로 빈으로 등록해주는 방법. 
+ 
+|Bean 등록 어노테이션|설명 |
+|-----|------|
+|@Component|개발자가 직접 작성한 Class를 Bean으로 등록하기 위한 어노테이션. Class의 이름을 camelCase로 변경한것이 Bean ID로 사용됨. | 
+|@Repository| DAO class에 쓰임. DataBase에 접근하는 method를 가지고 있는 Class에서 쓰임. | 
+|@Service|Service Class에서 쓰인다. 비즈니스 로직을 수행하는 Class라는 것을 나타냄| 
+|@Controller|Controller임을 의미.| 
+|@RestController|View로 응답하지 않는 Controller임을 의미.     결과를 JSON 형태로 반환| 
+
+- 스프링의 빈 스캐너는 @Component 애노테이션 또는, @Component를 메타 애노테이션으로 가진 애노테이션이 부여된 클래스를 선택하여 빈으로 등록. 이러한 애노테이션을 <span style="color:red">스테레오타입 애노테이션</span> 이라고 함.
+- xml 방식에 비해 빈 등록이 간단함. 개발 속도 향상.
+- 등록 대상이 되는 bean을 한눈에 확인하기 어려움. 
+- xml처럼 상세한 메타정보 항목을 지정할 수 없고, 클래스당 한개 이상의 빈을 등록 할 수 없음.
+
+<br>
+
+#### 3. Java Code에 의한 등록
+@Configuration 어노테이션이 부여되어있는 클래스에 @Bean 어노테이션을 사용하여 빈을 등록하는 방법
+
+```java
+@Configuration
+public class ExampleConfiguration {
+    
+    @Bean
+    public ExampleController exampleController() { //메소드 이름이 등록되는 빈의 이름이 됨
+        
+        return new ExampleController; //리턴되는 객체가 빈으로 활용됨
+    }
+    
+}
+```
+- return 되는 객체가 Ioc 컨테이너 안에 빈으로 등록된다.
+- 메소드 이름이 빈의 이름이 된다.
+- @Configuration의 메타 어노테이션 안에 @Component가 포함되어있기때문에 설정이 담긴 자바 클래스도 빈으로 등록됨 
+
+    
+| @Bean | @Component|
+|-------|-----------|
+| 메소드 레벨에 등록| 클래스 레벨에 사용|
+|개발자 컨트롤이 불가능한 외부 라이브러리 사용시| 개발자가 직접 컨트롤이 가능한 내부 클래스에 사용|
+
+
+<br>
+
+### Spring Container의 초기화와 종료
+#### 스프링 컨테이너란?
+자바객체(Bean)의 생명주기를 관리하며, 생성된 자바객체들에게 추가적인 기능을 제공하는 역할을 함. IoC와 DI의 원리가 적용됨. 
+
+<br>
+
+#### 스프링 컨테이너 종류
+`BeanFactory` 와 이를 상속한 `ApplicationContext` 가 있음
+
+##### BeanFactory 
+Bean 객체를 생성하고 관리하는 기본적인 기능을 제공. 컨테이너가 구동될 때 Bean객체를 생성하는 것이 아니라 
+클라이언트 요청에 의해서 Bean 객체가 사용되는 시점(Lazy Loading)에 객체를 생성하는 방식을 사용.
+
+<br>
+
+##### ApplicationContext
+BeanFactory를 상속받아 기능을 확장.
+
+<br>
+
+#### Bean 요청시 처리 과정
+![img_2.png](img_2.png)
+1. ApplicationContext는 @Configu
+ 
+
+### 객체 범위
+
+### 
+
+<br>
+<br>
+
 ## Spring 핵심 3요소
 ### IoC(Inversion of Control)
 #### IoC란?
@@ -97,7 +201,7 @@
 <br><br>
 
 #### DI(Dependency Injection)
-
+![img_1.png](img/DI_1.png)
 
 
 <br>
