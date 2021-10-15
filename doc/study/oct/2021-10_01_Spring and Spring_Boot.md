@@ -56,7 +56,7 @@
 <br>
 
 ### Bean 등록 방법
-![img_1.png](img_1.png)
+![img_1.png](img/img_1.png)
 - 컨테이너는 빈 설정 메타정보를 파일이나 애노테이션같은 리소스로부터 전용 리더를 통 해 읽혀서 BeanDefinition 타입의 오브젝트로 변환.
 - BeanDefinition 정보를 IoC 컨테이너가 활용하게 됨.
 
@@ -123,8 +123,7 @@ public class ExampleConfiguration {
 
 ### Spring Container의 초기화와 종료
 #### 스프링 컨테이너란?
-자바객체(Bean)의 생명주기를 관리하며, 생성된 자바객체들에게 추가적인 기능을 제공하는 역할을 함. IoC와 DI의 원리가 적용됨. 
-
+자바객체(Bean)의 생명주기를 관리하며, 생성된 자바객체들에게 추가적인 기능을 제공하는 역할을 함. 
 <br>
 
 #### 스프링 컨테이너 종류
@@ -141,14 +140,151 @@ BeanFactory를 상속받아 기능을 확장.
 
 <br>
 
-#### Bean 요청시 처리 과정
-![img_2.png](img_2.png)
-1. ApplicationContext는 @Configu
+#### Spring Container 라이프 사이클
+1. 스프링 컨테이너 생성.
+2. Bean 등록.
+   1. @Configuration의 @Bean 어노테이션을 이용한 수동 등록.
+   2. @ComponentScan을 이용한 자동 등록.
+3. Bean들이 모두 등록되면 Bean들의 의존 관계 주입(DI).
+4. 의존관계 주입이 끝나면 스프링은 콜백을 주고, 빈들을 초기화 함.
+5. 셋팅된 빈으로 Application을 실행.
+6. 스프링 컨테이너는 종료되기전 소멸 콜백을 줌.
+7. 스프링 컨테이너 정지
+
+<br>
+
+#### 라이프 사이클 예제
+* HelloSpringApplication.java
+```java
+@SpringBootApplication
+public class HelloSpringApplication {
+
+	public static void main(String[] args) {
+		//SpringApplication.run(HelloSpringApplication.class, args);
+
+		ConfigurableApplicationContext ctx =  SpringApplication.run(HelloSpringApplication.class, args);
+
+		ctx.close();
+
+	}
+}
+```
+
+<br>
+
+* MemberController.java
+```java
+@Controller
+public class MemberController {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("MemberController BEAN 생성");
+    }
+
+    @PreDestroy
+    public void stop(){
+        System.out.println("MemberController BEAN 삭제");
+    }
+    
+    private final MemberService memberService;
  
+    public MemberController(MemberService memberService){
+        this.memberService = memberService;
+    }
+```
+<br>
 
-### 객체 범위
+* MemberService.java
+```java
+@Service
+@Transactional
+public class MemberService {
+    
+    @PostConstruct
+    public void init() {
+        System.out.println("MemberService BEAN 생성");
+    }
 
-### 
+    @PreDestroy
+    public void stop(){
+        System.out.println("MemberService BEAN 삭제");
+    }
+ 
+   private final JpaMemberRepository jpaMemberRepository;
+ 
+    public MemberService(JpaMemberRepository jpaMemberRepository){
+        this.jpaMemberRepository = jpaMemberRepository;
+    }
+    
+```
+
+<br>
+
+* JpaMemberRepository.java
+```java
+@Repository
+public class JpaMemberRepository implements MemberRepository {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("JpaMemberRepository BEAN 생성");
+    }
+
+    @PreDestroy
+    public void stop(){
+        System.out.println("JpaMemberRepository BEAN 삭제");
+    }
+```
+
+<br>
+
+* SpringConfig.java
+```java
+@Configuration
+public class SpringConfig {
+
+
+    @Bean
+    public TimeTraceAop timeTraceAop(){
+        return new TimeTraceAop();
+    }
+
+```
+<br>
+
+* TimeTraceAop.java
+```java
+
+@Aspect
+//@Component //@Component 을 사용하던가 SpringConfig에 @Bean으로 등록하던가 하면됨
+public class TimeTraceAop {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("TimeTraceAop BEAN 생성");
+    }
+
+    @PreDestroy
+    public void stop(){
+        System.out.println("TimeTraceAop BEAN 삭제");
+    }
+    
+```
+
+* Application 실행 로그
+![img_8.png](img/img_8.png)
+
+
+
+- 스프링 컨테이너가 생성되고 그 안에 빈 객체들이 담겨있기 때문에 생명주기는 거의 같음. 
+- 스프링 컨테이너가 초기화되면 빈 객체가 생성 및 주입되고 스프링 컨테이너가 종료되면 빈 객체도 소멸.
+- @PostConstruct 이 부여된 메소드는 빈이 생성될 때 실행
+- @PreDestroy 이 부여된 메소드는 빈애 소멸될 때 실행
+- 의존성 주입에 쓰이는 객체부터 빈으로 등록되는듯.
+- @Conponent 로 등록된 빈들이 @Bean으로 등록된 빈보다 먼저 생성
+
+ 
 
 <br>
 <br>
@@ -200,8 +336,10 @@ BeanFactory를 상속받아 기능을 확장.
 
 <br><br>
 
-#### DI(Dependency Injection)
-![img_1.png](img/DI_1.png)
+#### DI(Dependency Injection) 방법
+1. 생성자 주입
+2. 수정자 주입
+3. 필드 주입
 
 
 <br>

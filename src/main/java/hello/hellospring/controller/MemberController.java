@@ -8,16 +8,32 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.List;
 
 @Controller
 public class MemberController {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("MemberController BEAN 생성");
+    }
+
+    @PreDestroy
+    public void stop(){
+        System.out.println("MemberController BEAN 삭제");
+    }
+
     private final MemberService memberService;
 
-    @Autowired
     public MemberController(MemberService memberService){
         this.memberService = memberService;
     }
+
+
+
+
 
     @GetMapping("/members/new")
     public String createForm(){

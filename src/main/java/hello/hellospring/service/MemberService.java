@@ -1,26 +1,41 @@
 package hello.hellospring.service;
 
 import hello.hellospring.domain.Member;
+import hello.hellospring.repository.JpaMemberRepository;
 import hello.hellospring.repository.MemberRepository;
 import hello.hellospring.repository.MemoryMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Optional;
 
-//@Service
+@Service
 @Transactional
 public class MemberService {
 
-   // private final MemberRepository memberRepository = new MemoryMemberRepository();
-   private final MemberRepository memberRepository;
-
-   //@Autowired
-    public MemberService(MemberRepository memberRepository){
-        this.memberRepository = memberRepository;
+    @PostConstruct
+    public void init() {
+        System.out.println("MemberService BEAN 생성");
     }
+
+    @PreDestroy
+    public void stop(){
+        System.out.println("MemberService BEAN 삭제");
+    }
+
+   private final JpaMemberRepository jpaMemberRepository;
+
+    public MemberService(JpaMemberRepository jpaMemberRepository){
+        this.jpaMemberRepository = jpaMemberRepository;
+    }
+
+
+
+
     /*
     * 회원가입
     * */
@@ -29,12 +44,12 @@ public class MemberService {
         //같은 이름이 있는 중복 회원X
 
             validateDuplicateMember(member); //중복 회원 검증
-            memberRepository.save(member);
+        jpaMemberRepository.save(member);
             return member.getId();
      }
 
     private void validateDuplicateMember(Member member) {
-        memberRepository.findByName(member.getName())
+        jpaMemberRepository.findByName(member.getName())
                 .ifPresent(m -> {
                     throw new IllegalStateException("이미 존재하는 회원입니다.");
                 });
@@ -46,11 +61,13 @@ public class MemberService {
     public List<Member> findMembers(){
 
 
-            return memberRepository.findAll();
+            return jpaMemberRepository.findAll();
 
     }
 
     public Optional<Member> findOne(Long memberId){
-        return memberRepository.findById(memberId);
+        return jpaMemberRepository.findById(memberId);
     }
+
+
 }

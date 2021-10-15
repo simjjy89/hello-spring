@@ -1,6 +1,7 @@
 package hello.hellospring.service;
 
 import hello.hellospring.domain.Member;
+import hello.hellospring.repository.JpaMemberRepository;
 import hello.hellospring.repository.MemberRepository;
 import hello.hellospring.repository.MemoryMemberRepository;
 import org.assertj.core.api.Assertions;
@@ -16,18 +17,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberServiceTest {
 
     MemberService memberService;
-    MemoryMemberRepository memberRepository;  //다른 객체임
+    JpaMemberRepository jpaMemberRepository;  //다른 객체임
 
     @BeforeEach
     public void beforeEach(){
-        memberRepository = new MemoryMemberRepository();
-        memberService = new MemberService(memberRepository);
+      //  jpaMemberRepository = new JpaMemberRepository();
+       // memberService = new MemberService(jpaMemberRepository);
     }
-
+/*
     @AfterEach
     public void afterEach(){
-        memberRepository.clearStore();
-    }
+        jpaMemberRepository.clearStore();
+    }*/
 
     @Test
     void 회원가입() {
