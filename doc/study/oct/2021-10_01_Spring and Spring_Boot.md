@@ -155,6 +155,7 @@ BeanFactory를 상속받아 기능을 확장.
 
 #### 라이프 사이클 예제
 * HelloSpringApplication.java
+
 ```java
 @SpringBootApplication
 public class HelloSpringApplication {
@@ -173,6 +174,7 @@ public class HelloSpringApplication {
 <br>
 
 * MemberController.java
+
 ```java
 @Controller
 public class MemberController {
@@ -196,6 +198,7 @@ public class MemberController {
 <br>
 
 * MemberService.java
+
 ```java
 @Service
 @Transactional
@@ -222,6 +225,7 @@ public class MemberService {
 <br>
 
 * JpaMemberRepository.java
+
 ```java
 @Repository
 public class JpaMemberRepository implements MemberRepository {
@@ -240,6 +244,7 @@ public class JpaMemberRepository implements MemberRepository {
 <br>
 
 * SpringConfig.java
+
 ```java
 @Configuration
 public class SpringConfig {
@@ -254,6 +259,7 @@ public class SpringConfig {
 <br>
 
 * TimeTraceAop.java
+
 ```java
 
 @Aspect
@@ -273,6 +279,7 @@ public class TimeTraceAop {
 ```
 
 * Application 실행 로그
+
 ![img_8.png](img/img_8.png)
 
 
@@ -304,35 +311,35 @@ public class TimeTraceAop {
 <BR>
 
 - 일반적인 의존성에 대한 제어권 : 개발자가 직접 의존성을 만듬
->```java
->public class OwnerController {
->
->private OwnerRepository ownerRepository = new OwnerRepository();  //변수 선언과 객체 생성을 본인이 함
->
->}
->```
->- 클래스 안에서 객체 생성을 함.
->- 클래스가 본인의 로직뿐만 아니라 생성한 객체에 대한 구현도 책임져야 함.
->- 클래스가 생성간 객체에 대해 의존성을 가짐
->- 의존성을 가지고 있는 객체의 클래스가 변경되는 경우 수정하는 작업이 생길 수 있음.
->- SRP(단일 책임 원칙)에 위배됨.
+```java
+public class OwnerController {
+
+private OwnerRepository ownerRepository = new OwnerRepository();  //변수 선언과 객체 생성을 본인이 함
+
+}
+```
+- 클래스 안에서 객체 생성을 함.
+- 클래스가 본인의 로직뿐만 아니라 생성한 객체에 대한 구현도 책임져야 함.
+- 클래스가 생성간 객체에 대해 의존성을 가짐
+- 의존성을 가지고 있는 객체의 클래스가 변경되는 경우 수정하는 작업이 생길 수 있음.
+- SRP(단일 책임 원칙)에 위배됨.
  
 
 <br>
 
 - 제어권 역전 : 직접 의존성을 만들지 않고 외부에서 의존성을 가져옴.
->```java
->class OwnerController {
->
->    private OwnerRepository repo;  //변수 선언만 함
->
->    public OwnerController(OwnerRepository repo) {  //외부에서 객체를 주입받음
->    this.repo = repo;
->}
->```
-> - 클래스에서 객체를 생성하지 않고 외부에서 주입받음
-> - 주입받은 객체의 클래스가 변경되어도 수정작업이 필요 없음.
-> - SRP(단일 책임 원칙)에 위배되지 않음.
+```java
+class OwnerController {
+
+    private OwnerRepository repo;  //변수 선언만 함
+
+    public OwnerController(OwnerRepository repo) {  //외부에서 객체를 주입받음
+    this.repo = repo;
+}
+```
+ - 클래스에서 객체를 생성하지 않고 외부에서 주입받음
+ - 주입받은 객체의 클래스가 변경되어도 수정작업이 필요 없음.
+ - SRP(단일 책임 원칙)에 위배되지 않음.
 
 <br><br>
 
@@ -441,10 +448,10 @@ public class TimeTraceAop {
 
 > - AOP 적용 전
 > 
-> ![img.png](img/AOP적용전.PNG)
+> ![img.png](img/befoeAOP.PNG)
 >- AOP 적용 후
 > 
-> ![img.png](img/AOP적용.PNG)
+> ![img.png](img/afterAOP.PNG)
  
 - @Around : 타겟 메서드를 감싸서 특정 Advice를 실행 한다는 의미. 
 - @Before : 타겟 메서드가 실행되기 전에 Advice를 실행.
