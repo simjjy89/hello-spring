@@ -9,11 +9,9 @@
 ### Spring & Spring Boot 
 - Spring 이란?  
 - Spring 구조
-- Bean 라이프 사이클과 범위
-- DI를 이용한 객체 생성
+- Bean 라이프 사이클과 범위 
 - Spring 핵심 3요소
-- Spring MVC 
-- 단위 테스트  
+- Spring MVC  
 
 ### Java 8+
 - Lamda

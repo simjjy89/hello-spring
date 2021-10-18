@@ -2,6 +2,7 @@ package hello.hellospring.controller;
 
 import hello.hellospring.domain.Member;
 import hello.hellospring.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +14,18 @@ import javax.annotation.PreDestroy;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class MemberController {
+
+    private final MemberService memberService;
+/*
+
+    @Autowired
+    public MemberController(MemberService memberService){
+        this.memberService = memberService;
+    }
+*/
+
 
     @PostConstruct
     public void init() {
@@ -24,16 +36,6 @@ public class MemberController {
     public void stop(){
         System.out.println("MemberController BEAN 삭제");
     }
-
-    private final MemberService memberService;
-
-    public MemberController(MemberService memberService){
-        this.memberService = memberService;
-    }
-
-
-
-
 
     @GetMapping("/members/new")
     public String createForm(){

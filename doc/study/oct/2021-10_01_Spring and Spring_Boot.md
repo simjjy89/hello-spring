@@ -2,10 +2,9 @@
 
 <br>
 
-## Spring 이란?
-### Spring 핵심 철학
-- 스프링은 JAVA 기반의 FrameWork
-- 객체지향 프로그래밍이 제공하는 폭넓은 혜택을 누릴 수 있도록, 기본으로 돌아가 오브젝트에 관심을 갖는것을 목표
+## Spring 
+### Spring 이란?
+- 소규모 어플리케이션 또는 기업용 어플리케이션을 자바로 개발하는데 있어 유용하고 편리한 기능을 제공하는 프레임워크
 
 ### Spring 사용 이유
 - 단순화된 단위 테스팅
@@ -130,8 +129,7 @@ public class ExampleConfiguration {
 `BeanFactory` 와 이를 상속한 `ApplicationContext` 가 있음
 
 ##### BeanFactory 
-Bean 객체를 생성하고 관리하는 기본적인 기능을 제공. 컨테이너가 구동될 때 Bean객체를 생성하는 것이 아니라 
-클라이언트 요청에 의해서 Bean 객체가 사용되는 시점(Lazy Loading)에 객체를 생성하는 방식을 사용.
+Bean 객체를 생성하고 관리하는 기본적인 기능을 제공.  
 
 <br>
 
@@ -344,10 +342,194 @@ class OwnerController {
 <br><br>
 
 #### DI(Dependency Injection) 방법
-1. 생성자 주입
+1. 필드 주입 
 2. 수정자 주입
-3. 필드 주입
+3. 생성자 주입
 
+<br>
+
+
+##### Field 주입
+Field에 직접 `@Autowired` 어노테이션을 붙어 의존성을 주입
+```java
+@Controller
+public class MemberController {
+    
+    @Autowired
+    private  MemberService memberService;
+ 
+```
+
+<br>
+
+##### Setter 주입
+Setter 메서드를 이용하여 주입하는 방식.
+```java
+@Controller
+public class MemberController {
+
+    private final MemberService memberService;
+
+    @Autowired //생성자가 하나인 경우 생략 가능
+    public void setMemberService(MemberService memberService){
+        this.memberService = memberService;
+    }
+```
+
+
+<br>
+
+##### 생성자 주입
+`@Autowired` 로 생성자에 다른 빈을 주입함. 생성자가 하나인 경우 생략이 가능하다.
+```java
+@Controller
+public class MemberController {
+
+    private final MemberService memberService;
+
+    @Autowired //생성자가 하나인 경우 생략 가능
+    public MemberController(MemberService memberService){
+        this.memberService = memberService;
+    }
+```
+
+주입 할 Bean이 많아지는 경우 `@RequiredArgsConstructor` 어노테이션을 사용하면 간결하게 작성이 가능.
+자동으로 생성자를 만들어 Bean을 주입함.
+```java
+@Controller
+@RequiredArgsConstructor
+public class MemberController {
+
+    private final MemberService memberService;
+    
+```
+
+<br>
+
+#### 생성자 주입을 사용해야 하는 이유
+##### 1. 순환참조 오류 방지
+순환 참조란 객체가 서로를 참조하는 경우를 뜻한다.
+아래는 두 객체가 서로를 필드 주입으로 참조하는 경우이다.
+
+* AAAService.java
+```java
+@Service
+public class AAAService {
+
+    //순환참조
+    @Autowired
+    private BBBService bbbService;
+
+    public void TestA(){
+        bbbService.TestB();
+    }
+}
+```            
+* BBBService.java
+```java
+@Service
+public class BBBService {
+
+    //순환참조
+    @Autowired
+    private AAAService aaaService;
+
+    public void TestB(){
+        aaaService.TestA();
+    }
+}
+```    
+* DITestApplication.java
+```java
+
+@SpringBootApplication
+public class DITestApplication implements CommandLineRunner {
+
+    @Autowired
+    private AAAService aaaService;
+
+    @Autowired
+    private BBBService bbbService;
+
+    @Override
+    public void run(String... args) throws Exception {
+
+        System.out.println("1111111111111");
+        aaaService.TestA();
+        bbbService.TestB();
+
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(DITestApplication.class, args);
+    }
+
+}
+```
+* 결과
+![img.png](img/DITest_1.png)
+
+AAAService.java와  BBBService.java가 서로를 Field 주입으로 참조하고있다. 
+이런경우 어플리케이션은 정상적으로 호출되지만 메소드를 호출하는 경우 오류 발생한다.
+이런 경우를 방지하기 위해 생성자 주입을 사용하여야 함.
+
+* AAAService.java ( 생성자 주입 적용 )
+```java
+@Service
+public class AAAService {
+
+    private final BBBService bbbService;
+
+    //@Autowired 생략 가능
+    public AAAService(BBBService bbbService){
+        this.bbbService = bbbService;
+    }
+
+    public void TestA(){
+        bbbService.TestB();
+    }
+}
+```
+
+* BBBService.java ( 생성자 주입 적용 )
+```java
+@Service
+public class BBBService {
+
+    private final AAAService aaaService;
+
+    //@Autowired 생략 가능
+    public BBBService(AAAService aaaService){
+        this.aaaService = aaaService;
+    }
+
+    public void TestB(){
+        aaaService.TestA();
+    }
+}
+```
+
+* 결과
+![img.png](img/DI_2.png)
+
+두 객체가 서로를 참조하고있고 생성자 주입이 적용되어있을때, 필드주입과 달리 어플리케이션 구동때부터 오류가 발생.
+
+- 오류발생 시점이 다른 이유
+  - Field 주입, Setter 주입 의 경우 Application 구동 시점에는 객체들이 초기화만 되어있어서 문제없이 작동되다가, 실제 객체가 사용되어야 하는 시점에 빈이 주입이 되게 되므로 그 시점에 오류가 발생
+  - 생성자 주입의 경우, 생성자로 객체를 생성하는 시점에 빈을 주입받음. 주입 받을 빈이 생성이 되어있지 않으니 application 구동시에 오류 출력.
+  - 생성자 주입을 사용 할 경우 런타임 시, 오류를 미리 잡을 수 있음.
+
+<br>
+
+##### 2. final 을 사용하여 불변
+```java
+private final AAAService aaaService;
+```
+final 을 선언하여 빈의 객체가 변경되는 일을 방지
+
+<br>
+
+##### 3. 테스트 코드에 용이
 
 <br>
 
