@@ -12,7 +12,7 @@
 - 아키텍처의 유연성
 
 <br>
- 
+
 ## Spring 구조
 ### Spring 주요 모듈 
 - 레이어 별로 크게 `Core Container`,`AOP`,`Web`,`Data Acess`, `Test` 로 나눌 수 있다.
@@ -25,6 +25,7 @@
    - `Core`는 다른 스프링 모듈에서 필요로 하는 공통 기능을 갖고있는 핵심 모듈. 주요 어노테이션, 컨버터, 상수, 유틸리티 클래스등을 제공.
    - `Beans`는 스프링 DI 기능 기능의 핵심인 Bean Factory와  DI 기능을 제공 하는 모듈
 2. Context
+   
    - Beans의 기능을 구현받아 사용하는 Beans의 확장 버전. 해당 모듈을 가장 많이 쓰며, Spring 개발의 필수.
 3. spEL
    - 객체 그래프를 조회하고 조작하는 기능을 제공
@@ -76,14 +77,14 @@ appplication.xml 파일에 `<bean>`태그를 이용해 빈을 등록하는 방�
 
 #### 2. Annotation을 이용한 자동인식
 빈으로 사용될 클래스에 특별한 애노테이션을 부여하여 자동으로 빈으로 등록해주는 방법. 
- 
+
 |Bean 등록 어노테이션|설명 |
 |-----|------|
-|@Component|개발자가 직접 작성한 Class를 Bean으로 등록하기 위한 어노테이션. Class의 이름을 camelCase로 변경한것이 Bean ID로 사용됨. | 
-|@Repository| DAO class에 쓰임. DataBase에 접근하는 method를 가지고 있는 Class에서 쓰임. | 
-|@Service|Service Class에서 쓰인다. 비즈니스 로직을 수행하는 Class라는 것을 나타냄| 
-|@Controller|Controller임을 의미.| 
-|@RestController|View로 응답하지 않는 Controller임을 의미.     결과를 JSON 형태로 반환| 
+|@Component|개발자가 직접 작성한 Class를 Bean으로 등록하기 위한 어노테이션. Class의 이름을 camelCase로 변경한것이 Bean ID로 사용됨. |
+|@Repository| DAO class에 쓰임. DataBase에 접근하는 method를 가지고 있는 Class에서 쓰임. |
+|@Service|Service Class에서 쓰인다. 비즈니스 로직을 수행하는 Class라는 것을 나타냄|
+|@Controller|Controller임을 의미.|
+|@RestController|View로 응답하지 않는 Controller임을 의미.     결과를 JSON 형태로 반환|
 
 - 스프링의 빈 스캐너는 @Component 애노테이션 또는, @Component를 메타 애노테이션으로 가진 애노테이션이 부여된 클래스를 선택하여 빈으로 등록. 이러한 애노테이션을 <span style="color:red">스테레오타입 애노테이션</span> 이라고 함.
 - xml 방식에 비해 빈 등록이 간단함. 개발 속도 향상.
@@ -302,13 +303,17 @@ public class TimeTraceAop {
 
 
 >Bean이란?
+>
 >- Spring IoC 컨테이너에 의해 관리되는 객체들을 `Bean`이라고 함. Bean은 Spring Ioc 컨테이너에 의해 인스턴스로 만들어지고, 조립되고, 관리를 받음.
 
 
 
 <BR>
 
-- 일반적인 의존성에 대한 제어권 : 개발자가 직접 의존성을 만듬
+- 일반적인 의존성에 대한 제어권 : 개발자가 직접 의존성을 만듬 
+
+<br>
+
 ```java
 public class OwnerController {
 
@@ -321,11 +326,14 @@ private OwnerRepository ownerRepository = new OwnerRepository();  //변수 선�
 - 클래스가 생성간 객체에 대해 의존성을 가짐
 - 의존성을 가지고 있는 객체의 클래스가 변경되는 경우 수정하는 작업이 생길 수 있음.
 - SRP(단일 책임 원칙)에 위배됨.
- 
+
 
 <br>
 
 - 제어권 역전 : 직접 의존성을 만들지 않고 외부에서 의존성을 가져옴.
+
+<br>
+
 ```java
 class OwnerController {
 
@@ -424,7 +432,7 @@ public class AAAService {
         bbbService.TestB();
     }
 }
-```            
+```
 * BBBService.java
 ```java
 @Service
@@ -438,10 +446,9 @@ public class BBBService {
         aaaService.TestA();
     }
 }
-```    
+```
 * DITestApplication.java
 ```java
-
 @SpringBootApplication
 public class DITestApplication implements CommandLineRunner {
 
@@ -463,7 +470,6 @@ public class DITestApplication implements CommandLineRunner {
     public static void main(String[] args) {
         SpringApplication.run(DITestApplication.class, args);
     }
-
 }
 ```
 * 결과
@@ -509,7 +515,7 @@ public class BBBService {
 }
 ```
 
-* 결과
+* 결과 <br>
 ![img.png](img/DI_2.png)
 
 두 객체가 서로를 참조하고있고 생성자 주입이 적용되어있을때, 필드주입과 달리 어플리케이션 구동때부터 오류가 발생.
@@ -540,7 +546,7 @@ final 을 선언하여 빈의 객체가 변경되는 일을 방지
 분리한 부가기능을 `Aspect` 라는 모듈 형태로 만들어서 설계하고 개발하는 방법임. 
 - 중복을 줄여서 적은 코드 수정으로 전체 변경을 할 수 있게 하자는 목적에서 출발
 
-<br>
+
 
 #### AOP  및 장점
 - 중복되는 코드를 제거
@@ -548,15 +554,20 @@ final 을 선언하여 빈의 객체가 변경되는 일을 방지
 - 변화 수용이 용이
 - 재활용성 극대화
 
-<br>
+
 
 #### AOP 용어 정리
 - 타겟(Target)
   - 핵심 기능을 담고 있는 모듈로 타겟은 부가기능을 부여할 대상(객체)이 된다.
 - 어드바이스(Advice)
-  - 어드바이스는 타겟에 제공할 부가기능을 담고 있는 모듈이다.
+  - 언제 부가기능을 타겟에 부여할지 순서를 정의
+        - @Around : 타겟 메서드를 감싸서 특정 Advice를 실행 한다는 의미.
+            - @Before : 타겟 메서드가 실행되기 전에 Advice를 실행.
+            - @After : 타겟 메서드가 실행된 후에 Advice를 실행.
+            - @AfterReturning : 타겟 메서드가 정상적으로 끝났을 경우 Advice를 실행
+            - @AfterThrowing : 타겟 메서드에서 throwing이 발생했을때 Advice 실행
 - 조인포인트(Join Point)
-  - 어드바이스가 어디에 적용될것인가? 메서드, 필드, 객체, 생성자 등. (Spring AOP 에서는 메서드에만 적용)
+  - Advice가 적용 가능한 지점. (Spring AOP 에서는 메서드에만 적용)
 - 포인트 컷(Pointcut)
   - 어드바이스를 적용할 타겟의 메서드를 선별하는 정규표현식이다. `JoinPoint`가 `Pointcut`에 일치할 때마다 해당 `PointCut`에 관련된 `Advice`가 실행됨.
 - 애스펙트(Aspect)
@@ -566,7 +577,8 @@ final 을 선언하여 빈의 객체가 변경되는 일을 방지
 - 위빙(Weaving)
   - `Aspect`를 `Target` 객체에 연결시켜 관점지향 객체로 만드는 과정을 의미함. `Advice`를 비즈니스 로직 코드에 삽입하는 것을 의미.
   
-<br>
+
+
 
 #### Spring AOP 동작 원리
 - Spring의 AOP는 기본적으로 프록시(Proxy) 방식으로 동작하도록 되어있음.
@@ -582,20 +594,20 @@ final 을 선언하여 빈의 객체가 변경되는 일을 방지
 > - 실제 기능을 수행하기전에 전처리를 작업을 할 수 있음.
 > - 실제 객체를 수정하지 않고 추가적인 기능을 삽입 할 수 있음.
 
-<br>
+
 
 #### 구현 방법
 
 ###### TimeTraceAop.java (@Around 적용)
 - 시작시간과 종료 시간을 표시하는 Aspect 구현
     - @Aspect로 해당 클래스가  Aspect를 나타내는 클래스라는 것을 명시하고 @Component를 사용하여 Bean으로 등록
-    - 
+
 ```java
 @Aspect //해당 클래스가 Aspect를 나타내는 클래스라는 것을 명시
 @Component //@Component 을 사용하던가 SpringConfig에 @Bean으로 등록하던가 하면됨
 public class TimeTraceAop {
 
-    @Around("execution(* hello.hellospring..*(..))") // 부가기능을 적용할 Target의 패턴
+    @Around("execution(* com.konai.sim.service.MemberService.findAll(..)))") // 부가기능을 적용할 Target의 패턴 (Point Cut)
     public Object excecute(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         System.out.println("START : "+joinPoint.toString());
@@ -612,7 +624,12 @@ public class TimeTraceAop {
 }
 ```
 
+@Around의 속성값으로 `pointCut`을 넣어줌
+
+
+
 ###### MemberController.java
+
 ```java
 
     @ApiOperation(value= "전체 유저 정보 출력", notes = "전체 유저정보를 가져옴", response = Member.class)
@@ -634,10 +651,72 @@ public class TimeTraceAop {
 >- AOP 적용 후
 > 
 > ![img.png](img/afterAOP.PNG)
+
+
+
+@Around의 `pointCut`의 적용 을 패키지 단위로 할 수도 있지만 커스텀 어노테이션을 사용해서 특정 메소드에 적용 할 수도 있다.
+
+###### TimeTrace.java  (커스텀 어노테이션 정의)
+
+```java
+@Target({ElementType.METHOD, ElementType.TYPE}) //메소드 범위에서 사용 가능
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface TimeTrace {
+}
+```
+
+
+
+###### TimeTraceAop.java
+
+```java
+@Aspect
+@Component
+public class TimeTraceAop {
  
-- @Around : 타겟 메서드를 감싸서 특정 Advice를 실행 한다는 의미. 
-- @Before : 타겟 메서드가 실행되기 전에 Advice를 실행.
-- @After : 타겟 메서드가 실행된 후에 Advice를 실행.
-- @AfterReturning : 타겟 메서드가 정상적으로 끝났을 경우 Advice를 실행
-- @AfterThrowing : 타겟 메서드에서 throwing이 발생했을때 Advice 실행
+    //@Around("execution(* com.konai.sim.service.MemberService.findAll(..)))")
+    @Around("@annotation(com.konai.sim.annotation.TimeTrace)") //어노테이션을 PointCut으로 지정
+    public Object excecute(ProceedingJoinPoint joinPoint) throws Throwable{
+        long start = System.currentTimeMillis();
+        System.out.println("START : "+joinPoint.toString());
+        try {
+            return joinPoint.proceed();
+        } finally {
+            long finish = System.currentTimeMillis();
+            long timeMs = finish - start;
+            System.out.println("END : "+joinPoint.toString()+ " "+ timeMs + "Ms");
+        }
+    }
+
+}
+```
+
+
+
+###### MemberController.java
+
+```java
+    @TimeTrace
+    @ApiOperation(value= "전체 유저 정보 출력", notes = "전체 유저정보를 가져옴", response = Member.class)
+    @RequestMapping(value = "/user/getAll", method = RequestMethod.POST)
+    public Page<Member> getAll (Pageable pageable){
+
+        System.out.println("GET CLASS : "+memberService.getClass());
+        Page<Member> result = memberService.findAll(pageable);
+        return result;
+
+    }
+```
+
+
+
+
+
+
+
+
+
+Advice 어노테이션 
+
  
