@@ -103,7 +103,7 @@ public class ExampleConfiguration {
     @Bean
     public ExampleController exampleController() { //메소드 이름이 등록되는 빈의 이름이 됨
         
-        return new ExampleController; //리턴되는 객체가 빈으로 활용됨
+        return new ExampleController(); //리턴되는 객체가 빈으로 활용됨
     }
     
 }
@@ -184,15 +184,16 @@ public class MemberController {
     }
 
     @PreDestroy
-    public void stop(){
+    public void stop() {
         System.out.println("MemberController BEAN 삭제");
     }
-    
+
     private final MemberService memberService;
- 
-    public MemberController(MemberService memberService){
+
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
+}
 ```
 <br>
 
@@ -202,22 +203,24 @@ public class MemberController {
 @Service
 @Transactional
 public class MemberService {
-    
+
     @PostConstruct
     public void init() {
         System.out.println("MemberService BEAN 생성");
     }
 
     @PreDestroy
-    public void stop(){
+    public void stop() {
         System.out.println("MemberService BEAN 삭제");
     }
- 
-   private final JpaMemberRepository jpaMemberRepository;
- 
-    public MemberService(JpaMemberRepository jpaMemberRepository){
+
+    private final JpaMemberRepository jpaMemberRepository;
+
+    public MemberService(JpaMemberRepository jpaMemberRepository) {
         this.jpaMemberRepository = jpaMemberRepository;
     }
+
+}
     
 ```
 
@@ -235,9 +238,10 @@ public class JpaMemberRepository implements MemberRepository {
     }
 
     @PreDestroy
-    public void stop(){
+    public void stop() {
         System.out.println("JpaMemberRepository BEAN 삭제");
     }
+}
 ```
 
 <br>
@@ -250,9 +254,10 @@ public class SpringConfig {
 
 
     @Bean
-    public TimeTraceAop timeTraceAop(){
+    public TimeTraceAop timeTraceAop() {
         return new TimeTraceAop();
     }
+}
 
 ```
 <br>
@@ -271,9 +276,10 @@ public class TimeTraceAop {
     }
 
     @PreDestroy
-    public void stop(){
+    public void stop() {
         System.out.println("TimeTraceAop BEAN 삭제");
     }
+}
     
 ```
 
@@ -337,10 +343,12 @@ private OwnerRepository ownerRepository = new OwnerRepository();  //변수 선�
 ```java
 class OwnerController {
 
-    private OwnerRepository repo;  //변수 선언만 함
+    private OwnerReposi
+    tory repo;  //변수 선언만 함
 
     public OwnerController(OwnerRepository repo) {  //외부에서 객체를 주입받음
-    this.repo = repo;
+        this.repo = repo;
+    }
 }
 ```
  - 클래스에서 객체를 생성하지 않고 외부에서 주입받음
@@ -362,9 +370,11 @@ Field에 직접 `@Autowired` 어노테이션을 붙어 의존성을 주입
 ```java
 @Controller
 public class MemberController {
-    
+
     @Autowired
-    private  MemberService memberService;
+    private MemberService memberService;
+    
+}
  
 ```
 
@@ -379,9 +389,10 @@ public class MemberController {
     private final MemberService memberService;
 
     @Autowired //생성자가 하나인 경우 생략 가능
-    public void setMemberService(MemberService memberService){
+    public void setMemberService(MemberService memberService) {
         this.memberService = memberService;
     }
+}
 ```
 
 
@@ -396,9 +407,10 @@ public class MemberController {
     private final MemberService memberService;
 
     @Autowired //생성자가 하나인 경우 생략 가능
-    public MemberController(MemberService memberService){
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
+}
 ```
 
 주입 할 Bean이 많아지는 경우 `@RequiredArgsConstructor` 어노테이션을 사용하면 간결하게 작성이 가능.
@@ -409,6 +421,8 @@ public class MemberController {
 public class MemberController {
 
     private final MemberService memberService;
+
+}
     
 ```
 
@@ -717,6 +731,94 @@ public class TimeTraceAop {
 
 
 
-Advice 어노테이션 
+#### Advice 어노테이션 
+##### @Before
+###### BeforeAop.java
+```java
+@Aspect
+@Component
+public class BeforeAop {
 
- 
+    @Before("@annotation(com.konai.sim.annotation.BeforeAop)")
+    public void  BeforeAopMethod(JoinPoint joinpoint) throws Throwable {
+        System.out.println("START BeforeAop"+joinpoint.getSignature());
+
+    }
+}
+```
+
+###### 로그
+![img.png](img/beforeAopLog.png)
+
+AOP가 적용될 메소드가 실행되기 전의 시점에 실행.
+
+
+<br>
+
+##### @After 
+###### AfterAop.java
+```java
+@Aspect
+@Component
+public class AfterAop {
+
+    @After("@annotation(com.konai.sim.annotation.BeforeAop)")
+    public void  BeforeAopMethod(JoinPoint joinpoint) throws Throwable {
+        System.out.println("START AfterAop"+joinpoint.getSignature());
+
+    }
+}
+```
+
+###### 로그
+![img_1.png](img/afterAopLog.png)
+
+- AOP가 적용될 메소드가 실행되고 나서 실행
+
+<br>
+
+##### @AfterReturning
+###### AfterReturningAop.java
+```java
+@Aspect
+@Component
+public class AfterReturningAop {
+
+    @AfterReturning("@annotation(com.konai.sim.annotation.AfterReturningAop)")
+    public void  BeforeAopMethod(JoinPoint joinpoint) throws Throwable {
+        System.out.println("START AfterReturningAop"+joinpoint.getSignature());
+
+    }
+}
+```
+
+###### 로그
+![img.png](img/AfterReturningAopLog.png)
+- AOP가 적용될 메소드가 예외없이 정상적으로 실행되고 난 후 실행됨
+
+<br>
+
+##### @AfterThrowing
+###### AfterThrowingAop.java
+```java
+@Aspect
+@Component
+public class AfterThrowingAop {
+
+    @AfterThrowing(value = "@annotation(com.konai.sim.annotation.AfterThrowingAop)", throwing="e")
+    public void  BeforeAopMethod(JoinPoint joinpoint, Exception e) throws Throwable {
+        System.out.println("START AfterThrowingAop"+joinpoint.getSignature());
+        System.out.println("e:"+e);
+
+    }
+}
+
+```
+
+###### 로그
+![img_1.png](img/AfterThrowingAopLog.png)
+
+- AOP가 적용될 메소드에 예외가 발생한 뒤 실행이 됨
+
+<br>
+
