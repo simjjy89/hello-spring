@@ -2,14 +2,28 @@ package hello.hellospring.repository;
 
 import hello.hellospring.domain.Member;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-
+@Repository
 public class JpaMemberRepository implements MemberRepository {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("JpaMemberRepository BEAN 생성");
+    }
+
+    @PreDestroy
+    public void stop(){
+        System.out.println("JpaMemberRepository BEAN 삭제");
+    }
+
 
     private final EntityManager em;
 
@@ -43,4 +57,8 @@ public class JpaMemberRepository implements MemberRepository {
     public List<Member> findAll() {
         return em.createQuery("SELECT m FROM Member m", Member.class).getResultList();
     }
+
+
+
+
 }
