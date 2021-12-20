@@ -13,7 +13,7 @@
 
 ### Publish / Subscribe 구조
 
-<img src="C:\study\hello-spring\doc\study\dec\img\pub_sub.png" alt="pub_sub" style="zoom:67%;" />
+<img src="img\pub_sub.png" alt="pub_sub" style="zoom:67%;" />
 
 - source Application과 Target Application 갯수가 적으면 data를 전송 하는 라인도 단순
 - source Application과 Target Application 갯수가 많아질 수록 data를 전송하는 라인도 복잡해짐
@@ -31,7 +31,7 @@
 
 ### 멀티 프로듀서, 멀티 컨슈머 
 
-<img src="C:\study\hello-spring\doc\study\dec\img\multi_produce_consumer.png" alt="multi_produce_consumer" style="zoom:67%;" />
+<img src="img\multi_produce_consumer.png" alt="multi_produce_consumer" style="zoom:67%;" />
 
 - 하나의 Topic에 여러 Producer가 메세지를 보낼 수 있음. 
 - 하나의 Consumer가 여러 Topic을 구독할 수 있음.
@@ -65,7 +65,7 @@
 
 ### Partition 이란
 
-### <img src="C:\study\hello-spring\doc\study\dec\img\topic3.PNG" alt="topic3" style="zoom: 67%;" />
+### <img src="img\topic3.PNG" alt="topic3" style="zoom: 67%;" />
 
 - 저장소(Topic) 에서 분리되어진 공간. 
 - 파티션이 많을 수록 Consumer에게 데이터를 빨리 전달 할 수 있음.
@@ -76,7 +76,7 @@
 
 ### Partitional 이란
 
-<img src="C:\study\hello-spring\doc\study\dec\img\partitional1.PNG" alt="partitional1" style="zoom:50%;" />
+<img src="img\partitional1.PNG" alt="partitional1" style="zoom:50%;" />
 
 - 프로듀서가 데이터를 보낼 때 무조건 파티셔너를 통해서 전송하게 됨. 파티셔너는 데이터를 토픽의 어떤 파티션에 넣을지 정하는 역할을 함.
 
