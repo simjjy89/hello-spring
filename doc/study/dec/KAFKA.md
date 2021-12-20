@@ -4,38 +4,91 @@
 
 ## 카프카는 무엇인가
 
-- Linked In에서 오픈소스로 개발된 분산 메시징 시스템. 대용량 실시간 로그처리에 특화되어있음
+- Linked In에서 오픈소스로 개발된 분산 메시징 시스템.
+- 대용량 실시간 로그처리에 특화되어있음.
 
 
 
-## 카프카를 통해 할 수 있는 일
+## 카프카 특징
 
+### Publish / Subscribe 구조
 
-
-## 카프카 사용 이유
+<img src="C:\study\hello-spring\doc\study\dec\img\pub_sub.png" alt="pub_sub" style="zoom:67%;" />
 
 - source Application과 Target Application 갯수가 적으면 data를 전송 하는 라인도 단순
 - source Application과 Target Application 갯수가 많아질 수록 data를 전송하는 라인도 복잡해짐
-  - 배포 및 유지보수에 어려움
-- 그러한 복잡성을 해결하기위해 링크드인에서 만들었고 현재는 오픈소스로 제공
-- Source Application과 Target Application의 결합도를 약하게 함
-  - Source Application 에서 Kafka로 데이터를 전송하고 Target Application에서 Kafka의 데이터를 가져옴
+  - 배포 및 유지보수에 어려움 
+- 발신자(Publish)는 수신자가 누구든 상관없이 메세지를 보내기만 하고 수신자(Subscribe)는 발신자가 누군지 상관없이 필요한 메세지를 수신함.
+- 카프카에서는 publish를 프로듀서(producer)라 하고, Subscribe를 컨슈머(Consumer)라 한다.
   - Kafka 내부에는 넘어온 데이터를 담는 Topic이라는 일종의 Queue가 존재
     - Topic에 데이터를 담는 역할은 Producer가, 데이터를 가져가는 역할은 Consumer가 함
 
+- Point to Point 구조가 아닌 Pub/Sub 구조를 채택함으로써, 전송 라인이 단순해짐
+
+  
 
 
-- 아주 유연한 Queue의 역할을 함
+
+### 멀티 프로듀서, 멀티 컨슈머 
+
+<img src="C:\study\hello-spring\doc\study\dec\img\multi_produce_consumer.png" alt="multi_produce_consumer" style="zoom:67%;" />
+
+- 하나의 Topic에 여러 Producer가 메세지를 보낼 수 있음. 
+- 하나의 Consumer가 여러 Topic을 구독할 수 있음.
+
+
+
+### 고가용성
+
 - 고가용성으로 서버에 갑자기 이슈가 생겼을 때, 데이터 손실없이 복구 할 수 있음.
+
+
+
+### 낮은 지연, 높은 처리량
+
 - 낮은 지연(Latency)과 높은 처리량(Throughput)을 통해서 데이터를 효과적으로 처리할 수 있음. 빅데이터 처리에 용이
 
 
 
-## 토픽이란?
 
+
+## Topic 과 Partition
+
+### Topic 이란
+
+- 카프카에서 데이터를 주고 받는 공간.
 - 토픽은 데이터베이스의 테이블이나 파일시스템의 폴더와 유사한 성질을 가지고 있음.
 
 - 토픽은 목적에 따라 이름을 갖을 수 있음. 추후 유지보수에 용이.  ex) click_log, send_sms, location_log
+
+
+
+### Partition 이란
+
+### <img src="C:\study\hello-spring\doc\study\dec\img\topic3.PNG" alt="topic3" style="zoom: 67%;" />
+
+- 저장소(Topic) 에서 분리되어진 공간. 
+- 파티션이 많을 수록 Consumer에게 데이터를 빨리 전달 할 수 있음.
+
+
+
+
+
+### Partitional 이란
+
+<img src="C:\study\hello-spring\doc\study\dec\img\partitional1.PNG" alt="partitional1" style="zoom:50%;" />
+
+- 프로듀서가 데이터를 보낼 때 무조건 파티셔너를 통해서 전송하게 됨. 파티셔너는 데이터를 토픽의 어떤 파티션에 넣을지 정하는 역할을 함.
+
+- 레코드에 포함된 메시지 키 또는 값에 따라 파티션의 위치가 달라짐.
+  - 동일한 메시지 키를 가진 레코드는 동일한 해쉬값을 만들어내기때문에 항상 동일한 파티션으로 들어갈 수 있음.
+    - 순서를 지켜서 데이터를 처리하게 할 수 있는 장점이 있음. ex) 서울의 온도를 측정한 데이터
+  - 메시지 키가 없는 데이터들은 round-robin 방식으로 적절하게 분배됨.
+- Partitional 인터페이스를 사용하여 커스텀 파티셔너를 만들 수 있음.
+  - 메세지키, 메세지값, 또는 토픽 이름에 따라 어느 파티션에 데이터를 보낼지 정할 수 있음.
+  - 특정 데이터의 처리량을 조절하고 싶은 경우 사용   ex) vip 고객의 데이터
+
+
 
 
 
@@ -121,17 +174,7 @@
 
 
 
-## 파티셔너
-
-- 프로듀서가 데이터를 보낼 때 무조건 파티셔너를 통해서 전송하게 됨. 파티셔너는 데이터를 토픽의 어떤 파티션에 넣을지 정하는 역할을 함.
-
-- 레코드에 포함된 메시지 키 또는 값에 따라 파티션의 위치가 달라짐.
-  - 동일한 메시지 키를 가진 레코드는 동일한 해쉬값을 만들어내기때문에 항상 동일한 파티션으로 들어갈 수 있음.
-    - 순서를 지켜서 데이터를 처리하게 할 수 있는 장점이 있음. ex) 서울의 온도를 측정한 데이터
-  - 메시지 키가 없는 데이터들은 round-robin 방식으로 적절하게 분배됨.
-- Partitioner 인터페이스를 사용하여 커스텀 파티셔너를 만들 수 있음.
-  - 메세지키, 메세지값, 또는 토픽 이름에 따라 어느 파티션에 데이터를 보낼지 정할 수 있음.
-  - 특정 데이터의 처리량을 조절하고 싶은 경우 사용   ex) vip 고객의 데이터
+- - 
 
 
 
