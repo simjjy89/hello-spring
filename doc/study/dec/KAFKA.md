@@ -2,29 +2,55 @@
 
 # KAFKA 
 
-## 카프카는 무엇인가
 
-- Linked In에서 오픈소스로 개발된 분산 메시징 시스템.
-- 대용량 실시간 로그처리에 특화되어있음.
+
+## About KAFKA
+
+### 카프카는 무엇인가
+
+- 대용량, 대규모 메세지 데이터를 빠르게 처리하도록 개발된 분산 메시징 플랫폼
+
+- 링크드 인에서 개발
+
+
+
+### 개발 배경
+
+##### Before Kafka
+
+![Before_Kafka](C:\study\hello-spring\doc\study\dec\img\Before_Kafka.png)
+
+- Point to Point 연결 방식의 아키텍쳐
+- 데이터 연동의 복잡성 증가
+- 확장에 어려움이 있음
+
+
+
+##### After Kafka
+
+![After_Kafka](C:\study\hello-spring\doc\study\dec\img\After_Kafka.png)
+
+- 생산자(Producer) 와 소비자(Consumer) 로 나눔
+- 메세지 데이터를 여러 컨슈머에게 허용
+- 확장에 용이
+- 메시지를 최적화 하여 처리량을 높임
+
+
 
 
 
 ## 카프카 특징
 
-### Publish / Subscribe 구조
+### Pub / Sub 방식<img src="img\pub_sub.png" alt="pub_sub" style="zoom:67%;" />
 
-<img src="img\pub_sub.png" alt="pub_sub" style="zoom:67%;" />
+- source Application과 Target Application 갯수가 많아질 수록 data를 전송하는 라인도 복잡해짐 
 
 - source Application과 Target Application 갯수가 적으면 data를 전송 하는 라인도 단순
-- source Application과 Target Application 갯수가 많아질 수록 data를 전송하는 라인도 복잡해짐
-  - 배포 및 유지보수에 어려움 
+
 - 발신자(Publish)는 수신자가 누구든 상관없이 메세지를 보내기만 하고 수신자(Subscribe)는 발신자가 누군지 상관없이 필요한 메세지를 수신함.
-- 카프카에서는 publish를 프로듀서(producer)라 하고, Subscribe를 컨슈머(Consumer)라 한다.
-  - Kafka 내부에는 넘어온 데이터를 담는 Topic이라는 일종의 Queue가 존재
-    - Topic에 데이터를 담는 역할은 Producer가, 데이터를 가져가는 역할은 Consumer가 함
 
-- Point to Point 구조가 아닌 Pub/Sub 구조를 채택함으로써, 전송 라인이 단순해짐
-
+- 카프카에서는 publish를 프로듀서(producer)라 하고, Subscribe를 컨슈머(Consumer)라 한다. 
+  
   
 
 
@@ -34,12 +60,14 @@
 <img src="img\multi_produce_consumer.png" alt="multi_produce_consumer" style="zoom:67%;" />
 
 - 하나의 Topic에 여러 Producer가 메세지를 보낼 수 있음. 
-- 하나의 Consumer가 여러 Topic을 구독할 수 있음.
+- Partition은 하나의 Consumer만 접근이 가능
+- Consumer는 여러 Partition을 소비할 수 있음.
 
 
 
-### 고가용성
+### 고가용성 및 확장성
 
+- 장애 대응에 강함. 
 - 고가용성으로 서버에 갑자기 이슈가 생겼을 때, 데이터 손실없이 복구 할 수 있음.
 
 
@@ -68,7 +96,7 @@
 ### <img src="img\topic2.PNG" alt="topic2" style="zoom: 60%;" />
 
 - 저장소(Topic) 에서 분리되어진 공간. 
-- 파티션이 많을 수록 Consumer에게 데이터를 빨리 전달 할 수 있음.
+- 파티션이 많을 수록 Consumer에게 데이터를 빨리 전달 할 수 있음. 
 
 
 
@@ -76,7 +104,7 @@
 
 ### <img src="img\topic3.PNG" alt="topic3" style="zoom: 67%;" />
 
-- 하나의 토픽은 여러개의 파티션으로 구성. 첫번째 파티션은 0번부터 생성
+- 하나의 토픽은 여러개의 파티션으로 구성. 
 
 - 카프카 Consumer는 가장 오래된 데이터부터 가져감.  데이터를 가져가도 파티션 내부의 데이터는 삭제되지 않음.
 
@@ -85,9 +113,8 @@
   - 컨슈머 그룹이 달라야 함.
   - auto.offset.reset = earliest 여야 함.
 
-  - 동일한 데이터에 대해 두번 처리 가능
-    - 카프카를 사용하는 중요한 이유    
-
+  - 동일한 데이터에 대해 두번 처리 가능 
+  
 - 파티션이 1개 추가된 경우
 
   - 데이터를 보낼 때 key를 지정하여 어느 파티션에 넣을지 정할 수 있음.
@@ -141,9 +168,8 @@
 - replication의 갯수는 broker 갯수보다 커질 수 없음!
 
 - 원본 partiton을 Leader partition, 복제본 partition을 Follower partition이라고 함. 
-  - Leader partition과 Follower partition을 묶어 ISR(In Sync Replica) 라고 함.
-  - 
-
+  - Leader partition과 Follower partition을 묶어 ISR(In Sync Replica) 라고 함. 
+  
 - partition의 고가용성을 위해 사용됨.
   - 원본 partition(Leader partition)이 훼손되더라도 Follower partition이 존재하므로 복제본으로 복구가 가능함. 그리고 Leader partition의 역할을 승계함
 
@@ -162,20 +188,18 @@
 
 - replication을 무턱대고 만들 수 없는 이유
   - replication이 많아질수록 resource도 많이 잡아먹음.
-    - retention date (저장시간)을 잘 생각해서 replication 갯수를 정하는 것이 좋음
-  - 3개이상의 broker를 사용 할 때, replication은 3으로 설정하는 것이 좋음.
+    - retention date (저장시간)을 잘 생각해서 replication 갯수를 정하는 것이 좋음 
 
 
 
 ### ISR(In Sync Replica)
 
-- 
+<img src="img\ISR2.png" alt="ISR2" style="zoom:67%;" />
 
-
-
-
-
-- - 
+- 모든 브로커에 Partition과 Replication이 할당 된 상태.
+- 특정 파티션의 리더, 팔로워가 각 브로커에 모두 복제되어 싱크가 맞는 상태를 의미
+- ISR인 상태에서는 브로커 한개가 죽더라도 복제본이 존재하므로 복구가 가능.
+- 팔로워 Partition이 Leader역할을 승계
 
 
 
