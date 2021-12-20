@@ -1,0 +1,23 @@
+kafka
+
+- 카프카는 무엇인가
+
+- 카프카 특징
+  - Publish / Subscribe 구조
+  - 멀티 프로듀서, 멀티 컨슈머 
+  - 고가용성
+  - 낮은 지연, 높은 처리량
+
+- Topic 과 Partition
+  - Topic 이란
+  - Partition 이란
+  - Topic 내부
+  - Partitional 이란
+  
+- 카프카 핵심요소 3가지
+  - Broker
+  - Replication
+  - ISR(In Sync Replica)
+
+- 카프카 Lag
+  - consumer lag
