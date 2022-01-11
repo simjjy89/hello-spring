@@ -190,5 +190,214 @@ fun printProblemCounts (response: Collection<String>){
 }
 ```
 
-위와 같이 람다 안에서 사용하는  외부 변수를 `람다가 포획한 변수` 라고 부름.
+- 위와 같이 람다 안에서 사용하는  외부 변수를 `람다가 포획한 변수` 라고 부름.  
 
+- 자바와는 달리 람다에서 람다밖에 있는 파이널이 아닌 변수(var)에 접근할 수 있고 변경할 수 있음.
+- 기본적으로 함수 안에 정의된 로컬 변수의 생명주기는 함수가 반환되면 끝나지만, 어떤 함수가 자신의 로컬 변수를 포획한 람다를 반환하거나 다른 변수에 저장한다면 로켤 변수와 함수의 생명주기가 달라질 수 있다.
+- 파이널 변수(val)를 포획한 경우, 람다코드를 변수값과 함께 저장.
+- 파이널이 아닌경우(var), 변수를 특별한 래퍼로 감싸서 나중에 변경하거나 읽을 수 있게 한 다음, 래퍼에 대한 참조를 람다코드와 함께 저장.
+
+```kotlin
+//변경 가능한 변수를 포획하는 방법을 보여주기 위한 예제
+class Ref<T> (var value: T)		
+val counter = Ref(0)
+val inc = { counter.value++ }  //final 변수를 포획했지만 그 변수를 가리키는 객체의 값을 변경가능
+
+//실제 코드에서는 래퍼를 만드는 대신, 변수를 직접 바꿈
+var counter = 0
+val inc = {counter++}
+```
+
+ 
+
+함정?
+
+
+
+### 멤버참조
+
+람다를 넘길 때 프로퍼티나 메소드를 단 하나만 호출하는 함수 값을 갖고있으면, 간단하게 이중콜론(::) 으로 사용할 수 있음.
+
+```kotlin
+		  // 클래스 :: 멤버
+val getAge = Person::age 
+->
+val getAge = {person: Person -> person.age}
+```
+
+
+
+최상위 함수의 표현
+
+```kotlin
+fun salute() = println("Salute!")
+run(::salute)  // 최상위 함수를 참조한다.
+// 출력 : Salute!
+```
+
+- 최상위 함수란 class 나 다른 fun 안에 있는 것이 아닌 가장 밖에 있는 fun값을 의미
+
+
+
+함수
+
+```kotlin
+val action = { person: Person, message: String ->
+             sendEmail(person, message)
+             }	// 이 람다는 sendEmail 함수에게 작업을 위임한다.
+val nextAction = ::sendEmail	// 람다 대신 멤버 참조를 쓸 수 있다.
+```
+
+
+
+생성자
+
+```kotlin
+data class Person(val name: String, val age:Int)
+>>> val createPerson = ::Person //"Person"의 인스턴스를 만드는 동작을 값으로 저장
+>>> val p = createPerson("Alice", 29)
+>>> println(p)
+Person(name=Alice, age=29)
+
+```
+
+
+
+ 
+
+### 컬렉션 함수형 API
+
+함수형 프로그래밍 스타일을 사용하면 컬렉션을 다룰때 편리
+
+
+
+#### filter ,map
+
+```kotlin
+// filter
+>>> val list = listOf(1,2,3,4)
+>>> println(list.filter {it % 2 == 0) //각 원소별로 넘겨서 true로 반환하는 원소만 모음
+[2, 4]         
+                         
+// map                         
+>>> println(list.map {it * it})
+[1, 4, 9, 16]                         
+```
+
+
+
+#### all, any, find, count
+
+```kotlin
+>>> val canBeInClub27 = { p: SamplePerson -> p.age <= 27}
+>>> val people = listOf(SamplePerson("ncucu", 27), SamplePerson("ncucu.me", 20))
+
+>>> println(people.all(canBeInClub27)) //모든 원소가 해당 조건에 일치하는지 확인
+false
+
+>>> println(people.any(canBeInClub27)) //원소 중 해당조건에 하나라도 일치하는게 있는지 확인
+true
+
+>>> println(people.find(canBeInClub27)) //조건을 만족하는 첫번째 원소를 반환.
+person("ncucu", 27)
+
+>>> println(people.find(canBeInClub27)) //조건을 만족하는 첫번째 원소를 반환.
+person("ncucu", 27)
+
+>>> println(people.count(canBeInClub27)) //조건에 만족하는 원소의 갯수.
+1
+```
+
+
+
+#### count와 size의 차이
+
+```kotlin
+>>> println(people.count(canBeInClub27)) 		  //조건에 만족하는 원소의 갯수만 추적
+>>> println(people.filter(canBeInClub27).size())  //조건을 만족하는 모든 원소가 포함된 컬렉션생성 
+```
+
+count는 원소의 갯수만 추적하므로 size보다 효율적
+
+
+
+#### groupBy
+
+컬렉션의 모든 원소를 특성에 따라 여러 그룹으로 나눌때 사용.
+
+```kotlin
+>>> val people = listOf(SamplePerson("A", 27), SamplePerson("B", 20), SamplePerson("C", 20))
+>>> val groupBy = people.groupBy { it.age } //age를 key, SamplePerson list를 value로  
+>>> println(groupBy)
+{27=[SamplePerson(name=A, age=27)], 20=[SamplePerson(name=B, age=20), SamplePerson(name=C, age=20)]}
+```
+
+ 
+
+#### flatMap, flatten 
+
+```kotlin
+>>> val strings = listOf("abc", "def")
+>>> println(strings.flatMap { it.toList() })
+[a, b, c, d, e, f]
+```
+
+위 코드는 다음의 두 단계를 수행
+
+1. it.toList()를 이용하여 해당 원소로 이루어진 리스트가 만들어진다. => list("abc"), list("def")
+2. flatMap이  모든 원소로 이루어진 단일 리스트를 반환한다. => list("a", "b", "c", "d", "e", "f")
+
+
+
+```kotlin
+>>> val deepList = listOf(listOf(1), listOf(2, 3), listOf(4, 5, 6))
+println(deepList.flatten()) //컬렉션의 모든 컬렉션에서 모든 요소를 단일목록으로 반환
+[1, 2, 3, 4, 5, 6]
+```
+
+flatten() 함수를 사용하면 컬렉션안의 컬렉션 요소들을 풀어서 하나의 단일 목록으로 반환한다.
+
+
+
+차이점을 좀더 찾아보기
+
+
+
+### 지연 계산(lazy) 컬렉션 연산
+
+```kotlin
+people.map(Person::name).filter{ it.startsWith("A")} //map과 filter 각각 리스트를 반환
+```
+
+- filter와 map이 연쇄 호출 되면서 List를 각각 하나씩 만든다. 요소가 많아질수록 비효율적임
+
+
+
+```kotlin
+people.asSequence()					//원본 컬렉션을 시퀀스로 반환
+	.map(Person::name)					// 중간연산
+    .filter { it.startWith("A") }		// 중간연산
+    .toList()						// 최종 연산
+```
+
+- 시퀀스 (Sequence) 를 사용하면 중간 임시 컬렉션을 사용하지 않고 컬렉션 연산을 연쇄실행함. 
+
+   - Sequence 와 Collection 의 차이?
+
+     
+
+
+
+#### 시퀀스 연산 실행 - 중간 연산과 최종 연산
+
+```kotlin
+        [        중간 연산         ] [ 최종연산 ]
+sequence.map { ... }.filter { ... }.toList()
+```
+
+- Collection이라면 모든 원소에 대해 map을 한 후 filter를 수행하지만
+- 지연 연산의 경우 첫번째 원소에 대해 map, filter 까지 수행 한 후 다음 원소에 대한 처리를 시작함.
+
+
+
+https://mond-al.github.io/kotlin-lazy-operation
