@@ -395,9 +395,74 @@ people.asSequence()					//원본 컬렉션을 시퀀스로 반환
 sequence.map { ... }.filter { ... }.toList()
 ```
 
-- Collection이라면 모든 원소에 대해 map을 한 후 filter를 수행하지만
-- 지연 연산의 경우 첫번째 원소에 대해 map, filter 까지 수행 한 후 다음 원소에 대한 처리를 시작함.
+- Collection 이라면 모든 원소에 대해 map을 한 후 filter를 수행하지만
+- Sequence 의 경우 첫번째 원소에 대해 map, filter 까지 수행 한 후 다음 원소에 대한 처리를 시작함.(지연계산)
+
+- map보다 filter를 먼저 실행시켜 전체 횟수를 줄이는게 좋음
 
 
 
-https://mond-al.github.io/kotlin-lazy-operation
+#### 자바 함수형 인터페이스
+
+#### 자바 메소드에 람다를 인자로 전달
+
+#### SAM 생성자
+
+
+
+
+
+### 수신 객체 지정 람다 : with, apply
+
+코틀린은 자바에는 없는 **수신 객체 지정 람다**라는 것을 가지고 있음. 말그대로 람다 함수를 쓸 때 내가 자주 쓰고 싶은 객체를 미리 지정해서 사용하는 람다이다.
+
+
+
+#### with
+
+```kotlin
+fun alphabet() : String {
+    val stringBuilder = StringBuilder()
+    return with(StringBuilder) { 	 
+    	for (letter in 'A'..'Z'){	
+            this.append(letter)
+        }
+        append("\nNow I know the alphabet!")
+        this.toString()
+    }
+}
+
+//위의 식을 리팩토링 하면 아래와 같음
+fun alphabert() = with(StringBuilder()){
+  
+       	for (letter in 'A'..'Z'){	
+            this.append(letter)
+        }
+        append("\nNow I know the alphabet!")
+        this.toString() 
+}
+
+```
+
+- 첫 번째 인자로 받은 객체(`StringBuilder`) 를 두번째 인자가 받는 수신 객체로 만듦. 두번째 객체로 받은 람다함수의 `this`가 곧 첫번째 인자로 수신받은 객체(`StringBuilder`) 이다.
+
+-  with가 반환하는 값은 람다 코드의 실행 결과이며 람다식 본문의 마지막 값 (수신받은 객체를 반환 X)
+
+
+
+#### apply
+
+```kotlin
+fun alphabert2() = StringBuilder().apply{
+
+    for (letter in 'A'..'Z'){
+         append(letter)
+    }
+    append("\nNow I know the alphabet!")
+}
+```
+
+- with와 거의 비슷? 
+- apply는 자신에게 수신된 객체를 반환 (이리저리 조작을 가한 객체 자체를 반환)
+
+ 
